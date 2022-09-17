@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] == '}'\
+                    if pline[0] is '{' and pline[-1] is'}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -113,41 +113,18 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def cast(self, value):
-        """cast string, to float or to int"""
-        try:
-            v = int(value)
-            return v
-        except (TypeError, ValueError):
-            pass
-        try:
-            v = float(value)
-            return v
-        except (TypeError, ValueError):
-            return value
-
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
-        new = args.split(" ")
-        if new[0] not in HBNBCommand.classes:
+        elif args not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        else:
-            attr = {}
-            for j in new[1:]:
-                n = j.split("=")
-                attr[n[0]] = n[1]
-            new_instance = HBNBCommand.classes[new[0]]()
-            for key, value in attr.items():
-                value = value.replace('_', ' ')
-                value = value.strip("\"'")
-                value = self.cast(value)
-                setattr(new_instance, key, value)
-            new_instance.save()
-            print(new_instance.id)
+        new_instance = HBNBCommand.classes[args]()
+        storage.save()
+        print(new_instance.id)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -229,11 +206,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all(eval(args)).items():
+            for k, v in storage._FileStorage__objects.items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -252,7 +229,7 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def help_count(self):
-        """method count"""
+        """ """
         print("Usage: count <class_name>")
 
     def do_update(self, args):
@@ -295,7 +272,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] == '\"':  # check for quoted arg
+            if args and args[0] is '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -303,10 +280,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] != ' ':
+            if not att_name and args[0] is not ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] == '\"':
+            if args[2] and args[2][0] is '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg

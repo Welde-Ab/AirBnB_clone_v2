@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
-
 import json
 
 
@@ -9,18 +8,9 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-    def all(self, cls=None):
+    def all(self):
         """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return self.__objects
-        else:
-            if type(cls) == str:
-                cls = eval(cls)
-            new_list = {}
-        for obj, value in self.__objects.items():
-            if type(value) == cls:
-                new_list[obj] = value
-        return new_list
+        return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -35,6 +25,13 @@ class FileStorage:
                 temp[key] = val.to_dict()
             json.dump(temp, f)
 
+    def delete(self, obj=None):
+            """kills obj if exists"""
+            if obj:
+                del self._objects
+            else:
+                pass
+            
     def reload(self):
         """Loads storage dictionary from file"""
         from models.base_model import BaseModel
@@ -58,12 +55,3 @@ class FileStorage:
                         self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
-
-    def delete(self, obj=None):
-        """delete object"""
-        if obj is None:
-            return
-        else:
-            key = "{}.{}".format(type(obj).__name__, obj.id)
-            if key in self.__objects:
-                del self.__objects[key]
