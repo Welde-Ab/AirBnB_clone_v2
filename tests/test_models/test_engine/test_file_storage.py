@@ -19,7 +19,7 @@ class test_fileStorage(unittest.TestCase):
 
     def tearDown(self):
         """ Remove storage file at end of tests """
-        try:
+        try FileNotFoundError or IOError:
             os.remove('file.json')
         except:
             pass
